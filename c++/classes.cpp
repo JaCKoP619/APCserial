@@ -789,11 +789,179 @@ to restart. Not applicable for the Main Outlet Group (MOG) */
                 if(outlet_status_raw & 8192 == 8192)
                 outlet_status.push_back("PLUG RATING EXCEEDED");
 
+                std::ostringstream outlet_status_str;
+                for (const auto& s : outlet_status) {
+                    if (!outlet_status_str.str().empty()) { 
+                        outlet_status_str << "\n";  
+                    }
+                    outlet_status_str << s;
+                    }
+                ups_state["outlet_statu"]= outlet_status_str.str();
+                break;
+            }
+            case 0x76:{
+                uint16_t status_value_raw;
+                std::memcpy(&status_value_raw, &msg_data[8], sizeof(status_value_raw));
+                ups_state["status_value_raw"]= to_string(status_value_raw);
+                
+                vector<string> status_value;
+                if(status_value_raw & 1 == 1)
+                    status_value.push_back("RESERVED BIT");
+                if(status_value_raw & 2 == 2)
+                    status_value.push_back("ONLINE");
+                if(status_value_raw & 4 == 4)
+                    status_value.push_back("ON BATTERY");
+                if(status_value_raw & 8 == 8)
+                    status_value.push_back("BYPASS ON");
+                if(status_value_raw & 16 == 16)
+                    status_value.push_back("OUTPUT OFF");
+                if(status_value_raw & 32 == 32)
+                    status_value.push_back("FAULT");
+                if(status_value_raw & 64 == 64)
+                    status_value.push_back("INPUT BAD");
+                if(status_value_raw & 128 == 128)
+                    status_value.push_back("TESTING");
+                if(status_value_raw & 256 == 256)
+                    status_value.push_back("PENDING OUTPUT ON");
+                if(status_value_raw & 512 == 512)
+                    status_value.push_back("PENDING OUTPUT OFF");
+                if(status_value_raw & 1024 == 1024)
+                    status_value.push_back("DELTA PHASE OUT OF RANGE");
+                if(status_value_raw & 2048 == 2048)
+                    status_value.push_back("NEUTRAL NOT CONNECTED");
+                if(status_value_raw & 8192 == 8192)
+                    status_value.push_back("GREEN MODE");
+                if(status_value_raw & 16384 == 16384)
+                    status_value.push_back("InformationalAlert");
+                
+                std::ostringstream status_value_str;
+                for (const auto& s : status_value) {
+                    if (!status_value_str.str().empty()) { 
+                        status_value_str << "\n";  
+                    }
+                    status_value_str << s;
+                    }
+                ups_state["status_value"]= status_value_str.str();
 
+                uint16_t status_chg_cause_raw;
+                std::memcpy(&status_chg_cause_raw, &msg_data[10], sizeof(status_chg_cause_raw));
+                ups_state["status_chg_cause_raw"]= to_string(status_chg_cause_raw);
+                    
+                std::vector<string> status_chg_cause;
 
+                if(status_chg_cause_raw== 0)
+                    status_chg_cause.push_back("SystemInitialization");
+                if(status_chg_cause_raw== 1)
+                    status_chg_cause.push_back("HighInputVoltage");
+                if(status_chg_cause_raw== 2)
+                    status_chg_cause.push_back("LowInputVoltage");
+                if(status_chg_cause_raw== 3)
+                    status_chg_cause.push_back("DistortedInput");
+                if(status_chg_cause_raw== 4)
+                    status_chg_cause.push_back("SystemInitialization");
+                if(status_chg_cause_raw== 5)
+                    status_chg_cause.push_back("HighInputFrequency");
+                if(status_chg_cause_raw== 6)
+                    status_chg_cause.push_back("LowInputFrequency");
+                if(status_chg_cause_raw== 7)
+                    status_chg_cause.push_back("FreqAndOrPhaseDifference");
+                if(status_chg_cause_raw== 8)
+                    status_chg_cause.push_back("AcceptableInput");
+                if(status_chg_cause_raw== 9)
+                    status_chg_cause.push_back("AutomaticTest");
+                if(status_chg_cause_raw== 10)
+                    status_chg_cause.push_back("TestEnded");
+                if(status_chg_cause_raw== 11)
+                    status_chg_cause.push_back("LocalUICommand");
+                if(status_chg_cause_raw== 12)
+                    status_chg_cause.push_back("ProtocolCommand");
+                if(status_chg_cause_raw== 13)
+                    status_chg_cause.push_back("LowBatteryVoltage");
+                if(status_chg_cause_raw== 14)
+                    status_chg_cause.push_back("GeneralError");
+                if(status_chg_cause_raw== 15)
+                    status_chg_cause.push_back("PowerSystemError");
+                if(status_chg_cause_raw== 16)
+                    status_chg_cause.push_back("BatterySystemError");
+                if(status_chg_cause_raw== 17)
+                    status_chg_cause.push_back("ErrorCleared");
+                if(status_chg_cause_raw== 18)
+                    status_chg_cause.push_back("AutomaticRestart");
+                if(status_chg_cause_raw== 19)
+                    status_chg_cause.push_back("DistortedInverterOutput");
+                if(status_chg_cause_raw== 20)
+                    status_chg_cause.push_back("InverterOutputAcceptable");
+                if(status_chg_cause_raw== 21)
+                    status_chg_cause.push_back("EPOInterface");
+                if(status_chg_cause_raw== 22)
+                    status_chg_cause.push_back("InputPhaseDeltaOutOfRange");
+                if(status_chg_cause_raw== 23)
+                    status_chg_cause.push_back("InputNeutralNotConnected");
+                if(status_chg_cause_raw== 24)
+                    status_chg_cause.push_back("ATSTransfer");
+                if(status_chg_cause_raw== 25)
+                    status_chg_cause.push_back("ConfigurationChange");
+                if(status_chg_cause_raw== 26)
+                    status_chg_cause.push_back("AlertAsserted");
+                if(status_chg_cause_raw== 27)
+                    status_chg_cause.push_back("AlertCleared");
+                if(status_chg_cause_raw== 28)
+                    status_chg_cause.push_back("PlugRatingExceeded");
+                if(status_chg_cause_raw== 29)
+                    status_chg_cause.push_back("OutletGroupStateChange");
+                if(status_chg_cause_raw== 30)
+                    status_chg_cause.push_back("FailureBypassExpired");
+            
+                std::ostringstream status_chg_cause_str;
+                for (const auto& s : status_chg_cause) {
+                    if (!status_chg_cause_str.str().empty()) { 
+                        status_chg_cause_str << "\n";  
+                    }
+                    status_chg_cause_str << s;
+                    }
+                ups_state["status_chg_cause"]= status_chg_cause_str.str();
+
+            }
+            case 0x79:{
+                ups_state["temperature_2"]= convert_from_bp({msg_data.begin() + 4, msg_data.begin()+6}, 7, false);
+                ups_state["humidity_pct"]= convert_from_bp({msg_data.begin() + 6, msg_data.begin()+8}, 9, false);
+                ups_state["temperature_3"]= convert_from_bp({msg_data.begin() + 14, msg_data.begin()+16}, 7, false);
+                break;
+            }
+            case 0x7a:{
+                ups_state["humidity_pct_2"]= convert_from_bp({msg_data.begin(), msg_data.begin()+2}, 9, false);
+                break;
+            }
+            case 0x7e:{
+                uint32_t password_1;
+                std::memcpy(&password_1, &msg_data[8], sizeof(password_1));
+                ups_state["password_1"]= to_string(password_1);
+
+                uint32_t password_2;
+                std::memcpy(&password_2, &msg_data[12], sizeof(password_2));
+                ups_state["password_2"]= to_string(password_2);
 
                 break;
             }
+            case 0x7f:{
+                uint16_t challenge_status;
+                std::memcpy(&challenge_status, &msg_data[12], sizeof(challenge_status));
+                ups_state["challenge_status"]= to_string(challenge_status);
+/* We have received all of the message IDs for the first time since reset.
+Now we need to answer the challenge string of the UPS. */
+                if(state==CommState::MODE0){
+                    std::vector<uint8_t> challange= calculate_challenge();
+                    std::vector<uint8_t> challenge_msg= create_msg_data(0x7e,12,challange);
+                    boost::asio::write(serial_, boost::asio::buffer(challenge_msg));
+                    
+                    rcv_data= receive_msg();
+                    if(!rcv_data.empty() &&  rcv_data.size() >0 && rcv_data[0]== 0x7e)
+                        state= CommState::MODE1;
+                    else
+                        return false;
+                    }
+                break;
+                }
             default:{                           //Default behavior is to request next data
                 next_apc_msg = APC_CMD_NEXT;
                 return true;               
